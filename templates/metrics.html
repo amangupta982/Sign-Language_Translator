@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>SignSpeak — Evaluation Metrics</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a28;--border:#2a2a3a;--text:#e8e8f0;--text2:#9898a8;--accent:#10b981;--radius:16px}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    body::before{content:'';position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(16,185,129,.08),transparent)}
+    .header{position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);background:rgba(10,10,15,.8);border-bottom:1px solid var(--border)}
+    .header-inner{max-width:1280px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-weight:800;font-size:1.25rem;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+    .logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+    nav a{color:var(--text2);text-decoration:none;font-size:.875rem;font-weight:500;margin-left:28px;transition:.2s}
+    nav a:hover{color:var(--accent)}
+    .container{max-width:1280px;margin:0 auto;padding:0 24px}
+    h1{font-size:2rem;font-weight:800;margin:40px 0 12px;letter-spacing:-.5px}
+    h1 span{background:linear-gradient(135deg,var(--accent),#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .subtitle{color:var(--text2);margin-bottom:32px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(16,185,129,.3),transparent)}
+    .card-title{font-size:1.1rem;font-weight:700;margin-bottom:16px}
+    .card img{width:100%;border-radius:12px;margin-top:8px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    .metrics-table{width:100%;border-collapse:collapse;font-size:.85rem}
+    .metrics-table th,.metrics-table td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+    .metrics-table th{color:var(--accent);font-weight:700;text-transform:uppercase;font-size:.75rem;letter-spacing:1px}
+    .metrics-table tr:hover td{background:var(--surface2)}
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+    .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+    .summary-card .value{font-size:1.8rem;font-weight:800;color:var(--accent)}
+    .summary-card .label{font-size:.8rem;color:var(--text2);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+    .footer{border-top:1px solid var(--border);padding:28px;text-align:center;color:var(--text2);font-size:.85rem;margin-top:60px}
+    .no-data{text-align:center;padding:60px;color:var(--text2)}
+    .no-data .icon{font-size:3rem;margin-bottom:12px}
+    @media(max-width:768px){.grid-2,.summary-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="{{ url_for('index') }}" class="logo"><span class="logo-dot"></span> SignSpeak</a>
+      <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('guide') }}">Gesture Guide</a>
+        <a href="{{ url_for('metrics') }}" style="color:var(--accent)">Metrics</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>📊 Evaluation <span>Metrics</span></h1>
+    <p class="subtitle">Model performance on the Sign MNIST test set</p>
+
+    {% if report and report.get('accuracy') is not none %}
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="value">{{ '%.1f' | format(report['accuracy'] * 100) }}%</div>
+        <div class="label">Accuracy</div>
+      </div>
+      <div class="summary-card">
+        <div class="value">{{ '%.1f' | format(report['weighted avg']['precision'] * 100) }}%</div>
+        <div class="label">Precision</div>
+      </div>
+      <div class="summary-card">
+        <div class="value">{{ '%.1f' | format(report['weighted avg']['recall'] * 100) }}%</div>
+        <div class="label">Recall</div>
+      </div>
+      <div class="summary-card">
+        <div class="value">{{ '%.1f' | format(report['weighted avg']['f1-score'] * 100) }}%</div>
+        <div class="label">F1-Score</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 Training History</div>
+      <img src="{{ url_for('static', filename='plots/training_history.png') }}" alt="Training curves" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔥 Confusion Matrix</div>
+      <img src="{{ url_for('static', filename='plots/confusion_matrix.png') }}" alt="Confusion matrix">
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">📊 Per-Class Accuracy</div>
+        <img src="{{ url_for('static', filename='plots/per_class_accuracy.png') }}" alt="Per-class accuracy">
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Sample Predictions</div>
+        <img src="{{ url_for('static', filename='plots/sample_predictions.png') }}" alt="Sample predictions">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Per-Letter Classification Report</div>
+      <table class="metrics-table">
+        <thead><tr><th>Letter</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Support</th></tr></thead>
+        <tbody>
+          {% for letter in letters %}
+          {% if report.get(letter) %}
+          <tr>
+            <td style="font-weight:700">{{ letter }}</td>
+            <td>{{ '%.2f' | format(report[letter]['precision']) }}</td>
+            <td>{{ '%.2f' | format(report[letter]['recall']) }}</td>
+            <td>{{ '%.2f' | format(report[letter]['f1-score']) }}</td>
+            <td>{{ report[letter]['support'] | int }}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="no-data card">
+      <div class="icon">📭</div>
+      <p>No evaluation data found.<br>Run <code style="background:var(--surface2);padding:4px 8px;border-radius:6px">python evaluate.py</code> to generate metrics.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <footer class="footer">© 2025 SignSpeak — Evaluation Dashboard</footer>
+</body>
+</html>

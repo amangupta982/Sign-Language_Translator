@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>SignSpeak — ASL Gesture Guide (A–Z)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a28;--border:#2a2a3a;--text:#e8e8f0;--text2:#9898a8;--accent:#10b981;--radius:16px}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    body::before{content:'';position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(16,185,129,.08),transparent)}
+    .header{position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);background:rgba(10,10,15,.8);border-bottom:1px solid var(--border)}
+    .header-inner{max-width:1280px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-weight:800;font-size:1.25rem;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+    .logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+    nav a{color:var(--text2);text-decoration:none;font-size:.875rem;font-weight:500;margin-left:28px;transition:.2s}
+    nav a:hover{color:var(--accent)}
+    .container{max-width:1280px;margin:0 auto;padding:0 24px}
+    h1{font-size:2rem;font-weight:800;margin:40px 0 8px;letter-spacing:-.5px}
+    h1 span{background:linear-gradient(135deg,var(--accent),#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .subtitle{color:var(--text2);margin-bottom:32px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px}
+    .letter-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:.3s}
+    .letter-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 8px 24px rgba(16,185,129,.1)}
+    .letter-card img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:var(--surface2)}
+    .letter-card .char{font-size:1.4rem;font-weight:800;margin-top:10px;color:var(--accent)}
+    .tip{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:24px;font-size:.9rem;color:var(--text2)}
+    .tip code{background:var(--surface2);padding:2px 8px;border-radius:6px;font-size:.85rem;border:1px solid var(--border)}
+    .footer{border-top:1px solid var(--border);padding:28px;text-align:center;color:var(--text2);font-size:.85rem;margin-top:60px}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="{{ url_for('index') }}" class="logo"><span class="logo-dot"></span> SignSpeak</a>
+      <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('guide') }}" style="color:var(--accent)">Gesture Guide</a>
+        <a href="{{ url_for('metrics') }}">Metrics</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>🤟 Gesture <span>Guide</span></h1>
+    <p class="subtitle">ASL fingerspelling alphabet — practice these signs for best recognition</p>
+
+    <div class="tip">
+      💡 <strong>Tip:</strong> Place gesture images in <code>static/gestures/</code> named <code>A.png</code> through <code>Z.png</code>. The model recognizes A–I and K–Y (J and Z require motion).
+    </div>
+
+    <div class="grid">
+      {% for L in letters %}
+      <div class="letter-card">
+        <img
+          src="{{ url_for('static', filename='gestures/' + L + '.png') }}"
+          alt="ASL sign for {{ L }}"
+          onerror="this.style.display='none'"
+        >
+        <div class="char">{{ L }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <footer class="footer">© 2025 SignSpeak — ASL Gesture Guide</footer>
+</body>
+</html>
